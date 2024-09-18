@@ -1,7 +1,7 @@
 #pragma once
 
 
-
+//test
 class CGame
 {
 public:
@@ -23,7 +23,7 @@ private:
 
 
 
-	//TODO �̰� Object �� �̵�
+	//TODO ÀÌ°Å Object ·Î ÀÌµ¿
 	void* CreateBoxMeshObject();
 
 private:
