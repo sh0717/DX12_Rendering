@@ -1,10 +1,10 @@
-#pragma once
+ï»¿#pragma once
 
 /*
 	coding standards 
-	¸â¹öº¯¼ö´Â mPascalCase
-	·ÎÄÃº¯¼ö´Â Pascal
-	TypeÀº Pascal
+	ë©¤ë²„ë³€ìˆ˜ëŠ” mPascalCase
+	ë¡œì»¬ë³€ìˆ˜ëŠ” Pascal
+	Typeì€ Pascal
 */
 
 constexpr UINT SWAP_CHAIN_FRAME_COUNT = 4;
@@ -137,7 +137,7 @@ private: /*variable*/
 	ID3D12Resource*	  m_pRenderTargets[SWAP_CHAIN_FRAME_COUNT] = {};
 	ID3D12Resource*   m_pDepthStencil= nullptr;
 
-	/*Descriptor ¸¦ °¡Áö°í ÀÖ´Â Heap*/
+	/*Descriptor ë¥¼ ê°€ì§€ê³  ìˆëŠ” Heap*/
 	ID3D12DescriptorHeap*	m_pRTVHeap = nullptr;
 	ID3D12DescriptorHeap*	m_pDSVHeap = nullptr;
 	ID3D12DescriptorHeap*	m_pSRVHeap = nullptr;
@@ -150,7 +150,7 @@ private: /*variable*/
 	HANDLE	m_hFenceEvent = nullptr;
 	ID3D12Fence* m_pFence = nullptr;
 
-	//ÇöÀç ¾²°í ÀÖ´Â Resource µé Index
+	//í˜„ì¬ ì“°ê³  ìˆëŠ” Resource ë“¤ Index
 	DWORD	m_CurContextIndex = 0;
 
 	D3D12_VIEWPORT	m_Viewport = {};

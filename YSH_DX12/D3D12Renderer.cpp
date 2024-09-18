@@ -1,4 +1,4 @@
-#include "pch.h"
+ï»¿#include "pch.h"
 #include <dxgi.h>
 #include <dxgi1_4.h>
 #include <d3d12.h>
@@ -276,7 +276,7 @@ void CD3D12Renderer::BeginRender()
 
 	// Record commands.
 	constexpr float BackColor[] = { 0.0f, 1.0f, 1.0f, 1.0f };
-	//°´Ã¼¸¦ ³Ö¾îÁÖ´Â°Ô ¾Æ´Ï¶ó Descriptor ¸¦ ³Ö¾îÁØ´Ù 
+	//ê°ì²´ë¥¼ ë„£ì–´ì£¼ëŠ”ê²Œ ì•„ë‹ˆë¼ Descriptor ë¥¼ ë„£ì–´ì¤€ë‹¤ 
 	
 	pCommandList->ClearRenderTargetView(RTVHandle, BackColor, 0, nullptr);
 	pCommandList->ClearDepthStencilView(DSVHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
@@ -300,9 +300,9 @@ void CD3D12Renderer::Present()
 	Fence();
 
 	//
-	// Back Buffer È­¸éÀ» Primary Buffer ·Î Àü¼Û
+	// Back Buffer í™”ë©´ì„ Primary Buffer ë¡œ ì „ì†¡
 	//
-	//UINT m_SyncInterval = 1;	// VSync On ¼öÁ÷µ¿±âÈ­
+	//UINT m_SyncInterval = 1;	// VSync On ìˆ˜ì§ë™ê¸°í™”
 	UINT m_SyncInterval = 0;	// VSync Off
 
 	UINT uiSyncInterval = m_SyncInterval;
@@ -320,7 +320,7 @@ void CD3D12Renderer::Present()
 		__debugbreak();
 	}
 	
-	// for next frame ´ÙÀ½ ÇÁ·¹ÀÓÀÇ RTVIndex
+	// for next frame ë‹¤ìŒ í”„ë ˆì„ì˜ RTVIndex
     m_CurrentRenderTargetIndex = m_pSwapChain->GetCurrentBackBufferIndex();
 
 	UINT64 NextContextIndex = (m_CurContextIndex + 1) % MAX_PENDING_FRAME_COUNT;
@@ -402,10 +402,10 @@ BOOL CD3D12Renderer::UpdateWindowSize(DWORD dwBackBufferWidth, DWORD dwBackBuffe
 
 void CD3D12Renderer::InitCamera()
 {
-	// Ä«¸Ş¶ó À§Ä¡, Ä«¸Ş¶ó ¹æÇâ, À§ÂÊ ¹æÇâÀ» ¼³Á¤
-	m_CameraPos = XMVectorSet(0.0f, 0.0f, -1.0f, 1.0f); // Ä«¸Ş¶ó À§Ä¡
-	m_CameraDir = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f); // Ä«¸Ş¶ó ¹æÇâ (Á¤¸éÀ» ÇâÇÏµµ·Ï ¼³Á¤)
-	XMVECTOR Up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f); // À§ÂÊ ¹æÇâ (ÀÏ¹İÀûÀ¸·Î yÃàÀ» µû¶ó ¼³Á¤)
+	// ì¹´ë©”ë¼ ìœ„ì¹˜, ì¹´ë©”ë¼ ë°©í–¥, ìœ„ìª½ ë°©í–¥ì„ ì„¤ì •
+	m_CameraPos = XMVectorSet(0.0f, 0.0f, -1.0f, 1.0f); // ì¹´ë©”ë¼ ìœ„ì¹˜
+	m_CameraDir = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f); // ì¹´ë©”ë¼ ë°©í–¥ (ì •ë©´ì„ í–¥í•˜ë„ë¡ ì„¤ì •)
+	XMVECTOR Up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f); // ìœ„ìª½ ë°©í–¥ (ì¼ë°˜ì ìœ¼ë¡œ yì¶•ì„ ë”°ë¼ ì„¤ì •)
 
 	
 	SetCamera(&m_CameraPos, &m_CameraDir, &Up);
@@ -792,7 +792,7 @@ void CD3D12Renderer::MoveCamera(float x, float y, float z)
 	m_CameraPos.m128_f32[0] += x;
 	m_CameraPos.m128_f32[1] += y;
 	m_CameraPos.m128_f32[2] += z;
-	XMVECTOR Up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f); // À§ÂÊ ¹æÇâ (ÀÏ¹İÀûÀ¸·Î yÃàÀ» µû¶ó ¼³Á¤)
+	XMVECTOR Up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f); // ìœ„ìª½ ë°©í–¥ (ì¼ë°˜ì ìœ¼ë¡œ yì¶•ì„ ë”°ë¼ ì„¤ì •)
 
 	SetCamera(&m_CameraPos, &m_CameraDir, &Up);
 }
@@ -802,8 +802,8 @@ void CD3D12Renderer::SetCamera(const XMVECTOR* pCameraPos, const XMVECTOR* pCame
 	// view matrix
 	m_matView = XMMatrixLookToLH(*pCameraPos, *pCameraDir, *pCameraUp);
 
-	// ½Ã¾ß°¢ (FOV) ¼³Á¤ (¶óµğ¾È ´ÜÀ§)
-	float fovY = XM_PIDIV4; // 90µµ (¶óµğ¾ÈÀ¸·Î º¯È¯)
+	// ì‹œì•¼ê° (FOV) ì„¤ì • (ë¼ë””ì•ˆ ë‹¨ìœ„)
+	float fovY = XM_PIDIV4; // 90ë„ (ë¼ë””ì•ˆìœ¼ë¡œ ë³€í™˜)
 
 	// projection matrix
 	float fAspectRatio = (float)m_Width / (float)m_Height;
