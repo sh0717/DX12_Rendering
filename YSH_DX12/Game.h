@@ -23,7 +23,7 @@ private:
 
 
 
-	//TODO ÀÌ°Å Object ·Î ÀÌµ¿
+	
 	void* CreateBoxMeshObject();
 
 private:

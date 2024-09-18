@@ -1,14 +1,13 @@
-﻿#pragma once
+#pragma once
 
 /*
 	coding standards 
-	멤버변수는 mPascalCase
-	로컬변수는 Pascal
-	Type은 Pascal
+l
+	Type is Pascal
 */
 
-constexpr UINT SWAP_CHAIN_FRAME_COUNT = 4;
-constexpr UINT MAX_PENDING_FRAME_COUNT = SWAP_CHAIN_FRAME_COUNT - 1;
+constexpr UINT32 SWAP_CHAIN_FRAME_COUNT = 4;
+constexpr UINT32 MAX_PENDING_FRAME_COUNT = SWAP_CHAIN_FRAME_COUNT - 1;
 class CD3D12Renderer
 {
 public:/*function*/
@@ -137,7 +136,7 @@ private: /*variable*/
 	ID3D12Resource*	  m_pRenderTargets[SWAP_CHAIN_FRAME_COUNT] = {};
 	ID3D12Resource*   m_pDepthStencil= nullptr;
 
-	/*Descriptor 를 가지고 있는 Heap*/
+	/*Descriptor Having Heap*/
 	ID3D12DescriptorHeap*	m_pRTVHeap = nullptr;
 	ID3D12DescriptorHeap*	m_pDSVHeap = nullptr;
 	ID3D12DescriptorHeap*	m_pSRVHeap = nullptr;
@@ -150,7 +149,7 @@ private: /*variable*/
 	HANDLE	m_hFenceEvent = nullptr;
 	ID3D12Fence* m_pFence = nullptr;
 
-	//현재 쓰고 있는 Resource 들 Index
+	//Currently Resource  using Index
 	DWORD	m_CurContextIndex = 0;
 
 	D3D12_VIEWPORT	m_Viewport = {};

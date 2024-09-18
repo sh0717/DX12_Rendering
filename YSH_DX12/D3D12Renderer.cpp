@@ -1,4 +1,4 @@
-﻿#include "pch.h"
+#include "pch.h"
 #include <dxgi.h>
 #include <dxgi1_4.h>
 #include <d3d12.h>
@@ -18,6 +18,8 @@
 #include "ConstantBufferManager.h"
 #include "FontManager.h"
 #include "TextureManager.h"
+
+//한글?
 
 CD3D12Renderer::CD3D12Renderer()
 	:  m_pSingleDescriptorAllocator(new CSingleDescriptorAllocator) , m_pResourceManager(new CD3D12ResourceManager) 
@@ -300,12 +302,12 @@ void CD3D12Renderer::Present()
 	Fence();
 
 	//
-	// Back Buffer 화면을 Primary Buffer 로 전송
+	// Back Buffer -> Primary Buffer 
 	//
-	//UINT m_SyncInterval = 1;	// VSync On 수직동기화
-	UINT m_SyncInterval = 0;	// VSync Off
+	//UINT mSyncInterval = 1;	// VSync On 
+	UINT mSyncInterval = 0;		// VSync Off
 
-	UINT uiSyncInterval = m_SyncInterval;
+	UINT uiSyncInterval = mSyncInterval;
 	UINT uiPresentFlags = 0;
 
 	if (!uiSyncInterval)
@@ -320,7 +322,7 @@ void CD3D12Renderer::Present()
 		__debugbreak();
 	}
 	
-	// for next frame 다음 프레임의 RTVIndex
+	// for next frame  RTVIndex
     m_CurrentRenderTargetIndex = m_pSwapChain->GetCurrentBackBufferIndex();
 
 	UINT64 NextContextIndex = (m_CurContextIndex + 1) % MAX_PENDING_FRAME_COUNT;
@@ -402,10 +404,10 @@ BOOL CD3D12Renderer::UpdateWindowSize(DWORD dwBackBufferWidth, DWORD dwBackBuffe
 
 void CD3D12Renderer::InitCamera()
 {
-	// 카메라 위치, 카메라 방향, 위쪽 방향을 설정
-	m_CameraPos = XMVectorSet(0.0f, 0.0f, -1.0f, 1.0f); // 카메라 위치
-	m_CameraDir = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f); // 카메라 방향 (정면을 향하도록 설정)
-	XMVECTOR Up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f); // 위쪽 방향 (일반적으로 y축을 따라 설정)
+	
+	m_CameraPos = XMVectorSet(0.0f, 0.0f, -1.0f, 1.0f); 
+	m_CameraDir = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
+	XMVECTOR Up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f); 
 
 	
 	SetCamera(&m_CameraPos, &m_CameraDir, &Up);
