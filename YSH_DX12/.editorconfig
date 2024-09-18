@@ -1,2 +1,4 @@
-[*.{cpp} , *.{h}]
+root = true
+
+[*.{cpp,h}]
 charset = utf-8
