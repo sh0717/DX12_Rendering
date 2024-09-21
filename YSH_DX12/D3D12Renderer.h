@@ -6,7 +6,7 @@ l
 	Type is Pascal
 */
 
-constexpr UINT32 SWAP_CHAIN_FRAME_COUNT = 4;
+constexpr UINT32 SWAP_CHAIN_FRAME_COUNT = 3;
 constexpr UINT32 MAX_PENDING_FRAME_COUNT = SWAP_CHAIN_FRAME_COUNT - 1;
 class CD3D12Renderer
 {
@@ -103,7 +103,7 @@ private:/*function*/
 private: /*variable*/
 
 	/*Static Variable*/
-	static constexpr  UINT MAX_DRAW_COUNT_PER_FRAME = 256;
+	static constexpr  UINT MAX_DRAW_COUNT_PER_FRAME = 1024;
 	static constexpr UINT MAX_DESCRIPTOR_COUNT = 4096;
 
 

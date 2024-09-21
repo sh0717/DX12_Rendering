@@ -146,13 +146,13 @@ bool CBasicMeshObject::InitPipelineState()
 	ID3DBlob* t_pVertexShader = nullptr;
 	ID3DBlob* t_pPixelShader = nullptr;
 
+
+	UINT CompileFlags = 0;
 #if defined(_DEBUG)
 	// Enable better shader debugging with the graphics debugging tools.
-	UINT CompileFlags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
-#else
-	UINT compileFlags = 0;
+	 CompileFlags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
 #endif
-	//Hey man , Is This shader name correct??
+
 	if (FAILED(D3DCompileFromFile(L"./Shaders/DefaultShader.hlsl", nullptr, nullptr, "VSMain", "vs_5_0", CompileFlags, 0, &t_pVertexShader, nullptr)))
 	{
 		__debugbreak();
@@ -163,7 +163,7 @@ bool CBasicMeshObject::InitPipelineState()
 	}
 
 
-		//VertexBuffer ∂˚ ªÛ»£∞£ø° ∏¬√Áæﬂ µ 
+		//VertexBuffer Îûë ÏÉÅÌò∏Í∞ÑÏóê ÎßûÏ∂∞Ïïº Îê®
 	D3D12_INPUT_ELEMENT_DESC InputElementDescs[] =
 	{
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
@@ -212,111 +212,98 @@ bool CBasicMeshObject::InitPipelineState()
 
 void CBasicMeshObject::Draw(ID3D12GraphicsCommandList* pCommandList,  XMMATRIX* pWorldMatrix )
 {
+	
+	ID3D12Device5* pD3DDevice = m_pRenderer->GetD3DDevice();
+	CDescriptorPool* pDescriptorPool = m_pRenderer->GetDescriptorPool();
+	CConstantBufferPool* pConstantBufferPool = m_pRenderer->GetConstantBufferPool(CONSTANT_BUFFER_TYPE_DEFAULT);
 
-	if (pCommandList && IsInitialized())
-	{
-		if(!m_pRenderer)
-		{
-			__debugbreak();
-		}
-		ID3D12Device5* pD3DDevice = m_pRenderer->GetD3DDevice();
-		CDescriptorPool* pDescriptorPool = m_pRenderer->GetDescriptorPool();
-		CConstantBufferPool* pConstantBufferPool = m_pRenderer->GetConstantBufferPool(CONSTANT_BUFFER_TYPE_DEFAULT);
-
-		if(pDescriptorPool == nullptr)
-		{
-			__debugbreak();
-		}
-		if(pConstantBufferPool == nullptr)
-		{
-			__debugbreak();
-		}
-
-		UINT CBV_SRV_UAV_DescriptorSize = pDescriptorPool->Get_CBV_SRV_UAV_DescriptorSize();
-		ID3D12DescriptorHeap* pDescriptorHeap = pDescriptorPool->GetDescriptorHeap();
-		
-		if( (!pDescriptorHeap) ||(!pD3DDevice))
-		{
-			DebugBreak();
-		}
-
-
-		CD3DX12_CPU_DESCRIPTOR_HANDLE CPUDescriptorTable = {};
-		CD3DX12_GPU_DESCRIPTOR_HANDLE GPUDescriptorTable = {};
-		DWORD RequiredDescriptorCount = BASIC_MESH_DESCRIPTOR_COUNT_PER_OBJ + (m_TriGroupCount * BASIC_MESH_DESCRIPTOR_COUNT_PER_TRI_GROUP);
-
-
-		if(pDescriptorPool->AllocateDescriptorTable(&CPUDescriptorTable , &GPUDescriptorTable , RequiredDescriptorCount) == false)
-		{
-			__debugbreak();
-		}
-
-		CB_Container* pCB = pConstantBufferPool->AllocateConstantBuffer();
-		if(!pCB)
-		{
-			__debugbreak();
-		}
-
-		CD3DX12_CPU_DESCRIPTOR_HANDLE cbvDest(CPUDescriptorTable, BASIC_MESH_DESCRIPTOR_INDEX_PER_OBJ_CBV_0, CBV_SRV_UAV_DescriptorSize);
-		pD3DDevice->CopyDescriptorsSimple(1, cbvDest, pCB->CBVHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);	// cpu√¯ ƒ⁄µÂø°º≠¥¬ cpu descriptor handleø°∏∏ write∞°¥…
-
-
-		CONSTANT_BUFFER_DEFAULT* pConstantBufferDefault = (CONSTANT_BUFFER_DEFAULT*)pCB->pSystemMemberAddr;
-
-		// constant buffer¿« ≥ªøÎ¿ª º≥¡§
-		pConstantBufferDefault->matWorld = XMMatrixTranspose(*pWorldMatrix);
-		m_pRenderer->GetViewProjMatrix(&pConstantBufferDefault->matView, &pConstantBufferDefault->matProj);
-
-
-		CD3DX12_CPU_DESCRIPTOR_HANDLE PerTriDest(CPUDescriptorTable, BASIC_MESH_DESCRIPTOR_COUNT_PER_OBJ, CBV_SRV_UAV_DescriptorSize);
-		for(UINT i = 0 ; i < m_TriGroupCount ; ++i)
-		{
-			IndexedTriGroup* pTriGroup = m_pTriGroupList + i;
-			TextureHandle* pTexHandle = pTriGroup->pTextureHandle;
-			if (pTexHandle)
-			{
-				pD3DDevice->CopyDescriptorsSimple(1, PerTriDest, pTexHandle->SRVHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);	
-			}
-			else
-			{
-				/*#ifdef _DEBUG
-							std::cerr << "CBasicMeshObject::Draw(ID3D12GraphicsCommandList* pCommandList,  XMMATRIX* pWorldMatrix )		Trigroup Data ø° TextureHandle* ¿Ã null ¿Ã∂Ûº≠ Default Texture ∏¶ ªÁøÎ«’¥œ¥Ÿ";
-				#endif*/
-
-				pD3DDevice->CopyDescriptorsSimple(1, PerTriDest, m_pRenderer->GetDefaultTexture()->SRVHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-			}
-
-			PerTriDest.Offset(1, CBV_SRV_UAV_DescriptorSize);
-		}
-
-
-		pCommandList->SetGraphicsRootSignature(m_pRootSignature);
-		pCommandList->SetDescriptorHeaps(1, &pDescriptorHeap);
-		
-
-		pCommandList->SetPipelineState(m_pPipelineState);
-		pCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		pCommandList->IASetVertexBuffers(0, 1, &m_VerTexBufferView);
-
-
-		pCommandList->SetGraphicsRootDescriptorTable(0, GPUDescriptorTable);
-
-		CD3DX12_GPU_DESCRIPTOR_HANDLE gpuDescriptorTableForTriGroup(GPUDescriptorTable, BASIC_MESH_DESCRIPTOR_COUNT_PER_OBJ, CBV_SRV_UAV_DescriptorSize);
-		for (DWORD i = 0; i < m_TriGroupCount; i++)
-		{
-			// set descriptor table for root-param 1
-			pCommandList->SetGraphicsRootDescriptorTable(1, gpuDescriptorTableForTriGroup);	// Entry of Tri-Groups
-			gpuDescriptorTableForTriGroup.Offset(1, CBV_SRV_UAV_DescriptorSize);
-
-			IndexedTriGroup* pTriGroup = m_pTriGroupList + i;
-			pCommandList->IASetIndexBuffer(&pTriGroup->IndexBufferView);
-			pCommandList->DrawIndexedInstanced(pTriGroup->TriangleCount * 3, 1, 0, 0, 0);
-		}
-
-	}
-	else
+	if(pDescriptorPool == nullptr)
 	{
 		__debugbreak();
+	}
+	if(pConstantBufferPool == nullptr)
+	{
+		__debugbreak();
+	}
+
+	UINT CBV_SRV_UAV_DescriptorSize = pDescriptorPool->Get_CBV_SRV_UAV_DescriptorSize();
+	ID3D12DescriptorHeap* pDescriptorHeap = pDescriptorPool->GetDescriptorHeap();
+	
+	if( (!pDescriptorHeap) ||(!pD3DDevice))
+	{
+		DebugBreak();
+	}
+
+
+	CD3DX12_CPU_DESCRIPTOR_HANDLE CPUDescriptorTable = {};
+	CD3DX12_GPU_DESCRIPTOR_HANDLE GPUDescriptorTable = {};
+	DWORD RequiredDescriptorCount = BASIC_MESH_DESCRIPTOR_COUNT_PER_OBJ + (m_TriGroupCount * BASIC_MESH_DESCRIPTOR_COUNT_PER_TRI_GROUP);
+
+
+	if(pDescriptorPool->AllocateDescriptorTable(&CPUDescriptorTable , &GPUDescriptorTable , RequiredDescriptorCount) == false)
+	{
+		__debugbreak();
+	}
+
+	CB_Container* pCB = pConstantBufferPool->AllocateConstantBuffer();
+	if(!pCB)
+	{
+		__debugbreak();
+	}
+	CONSTANT_BUFFER_DEFAULT* pConstantBufferDefault = (CONSTANT_BUFFER_DEFAULT*)pCB->pSystemMemberAddr;
+	// constant bufferÏùò ÎÇ¥Ïö©ÏùÑ ÏÑ§Ï†ï
+	pConstantBufferDefault->matWorld = XMMatrixTranspose(*pWorldMatrix);
+	m_pRenderer->GetViewProjMatrix(&pConstantBufferDefault->matView, &pConstantBufferDefault->matProj);
+	
+	CD3DX12_CPU_DESCRIPTOR_HANDLE cbvDest(CPUDescriptorTable, BASIC_MESH_DESCRIPTOR_INDEX_PER_OBJ_CBV_0, CBV_SRV_UAV_DescriptorSize);
+	pD3DDevice->CopyDescriptorsSimple(1, cbvDest, pCB->CBVHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);	// cpuÏ∏° ÏΩîÎìúÏóêÏÑúÎäî cpu descriptor handleÏóêÎßå writeÍ∞ÄÎä•
+	
+
+	
+
+	
+	
+
+	CD3DX12_CPU_DESCRIPTOR_HANDLE PerTriDest(CPUDescriptorTable, BASIC_MESH_DESCRIPTOR_COUNT_PER_OBJ, CBV_SRV_UAV_DescriptorSize);
+	for(UINT i = 0 ; i < m_TriGroupCount ; ++i)
+	{
+		IndexedTriGroup* pTriGroup = m_pTriGroupList + i;
+		TextureHandle* pTexHandle = pTriGroup->pTextureHandle;
+		if (pTexHandle)
+		{
+			pD3DDevice->CopyDescriptorsSimple(1, PerTriDest, pTexHandle->SRVHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		}
+		else
+		{
+			pD3DDevice->CopyDescriptorsSimple(1, PerTriDest, m_pRenderer->GetDefaultTexture()->SRVHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		}
+
+		PerTriDest.Offset(1, CBV_SRV_UAV_DescriptorSize);
+	}
+
+	
+	
+	pCommandList->SetGraphicsRootSignature(m_pRootSignature);
+	pCommandList->SetDescriptorHeaps(1, &pDescriptorHeap);
+	
+
+	pCommandList->SetPipelineState(m_pPipelineState);
+	pCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	pCommandList->IASetVertexBuffers(0, 1, &m_VerTexBufferView);
+
+
+	pCommandList->SetGraphicsRootDescriptorTable(0, GPUDescriptorTable);
+
+	CD3DX12_GPU_DESCRIPTOR_HANDLE gpuDescriptorTableForTriGroup(GPUDescriptorTable, BASIC_MESH_DESCRIPTOR_COUNT_PER_OBJ, CBV_SRV_UAV_DescriptorSize);
+	for (DWORD i = 0; i < m_TriGroupCount; i++)
+	{
+		// set descriptor table for root-param 1
+		pCommandList->SetGraphicsRootDescriptorTable(1, gpuDescriptorTableForTriGroup);	// Entry of Tri-Groups
+		gpuDescriptorTableForTriGroup.Offset(1, CBV_SRV_UAV_DescriptorSize);
+
+		IndexedTriGroup* pTriGroup = m_pTriGroupList + i;
+		pCommandList->IASetIndexBuffer(&pTriGroup->IndexBufferView);
+		pCommandList->DrawIndexedInstanced(pTriGroup->TriangleCount * 3, 1, 0, 0, 0);
 	}
 }
 
@@ -387,14 +374,9 @@ void CBasicMeshObject::EndCreateMesh()
 
 }
 
-
-
-
-
 //Clean Start 
 void CBasicMeshObject::Cleanup()
 {
-
 	if (m_pVertexBuffer) 
 	{
 		m_pVertexBuffer->Release();

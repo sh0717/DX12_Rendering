@@ -3,7 +3,7 @@
 
 /*			Note
 	================================
-	CVB, SRV ,UAV descriptor size´Â µ¿ÀÏ
+	CVB, SRV ,UAV descriptor sizeëŠ” ë™ì¼
 	
 	RTV DSV?
 
@@ -86,7 +86,7 @@ private:/*variable*/
 
 	class CD3D12Renderer* m_pRenderer;
 
-	UINT	m_CBV_SRV_UAVDescriptorSize = 0; //ÀÏ´Ü ³» ²¨¿¡¼­´Â 32byte ÇÏÁö¸¸ GPU ¸¶´Ù ´Ù¸¦ ¼öµµ ÀÖ¾î 
+	UINT	m_CBV_SRV_UAVDescriptorSize = 0; //ì¼ë‹¨ ë‚´ êº¼ì—ì„œëŠ” 32byte í•˜ì§€ë§Œ GPU ë§ˆë‹¤ ë‹¤ë¥¼ ìˆ˜ë„ ìˆì–´ 
 	
 
 	ID3D12Resource* m_pVertexBuffer = nullptr;

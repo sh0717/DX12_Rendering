@@ -478,12 +478,9 @@ void CD3D12Renderer::RenderMeshObject(void* MeshObjHandle , XMMATRIX* pWorldMatr
 {
 	ID3D12GraphicsCommandList* pCommandList = m_ppCommandLists[m_CurContextIndex];
 
-	if (CBasicMeshObject* MeshObj = static_cast<CBasicMeshObject*>(MeshObjHandle)) 
+	if (CBasicMeshObject* MeshObj = (CBasicMeshObject*)MeshObjHandle) 
 	{
-		if(MeshObj->IsInitialized())
-		{
 			MeshObj->Draw(pCommandList, pWorldMatrix);
-		}
 	}
 #ifdef _DEBUG
 	else

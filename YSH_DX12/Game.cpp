@@ -1,20 +1,14 @@
 #include "pch.h"
 #include "Game.h"
 #include "D3D12Renderer.h"
+#include "GameObject.h"
 
 
-class CBasicMeshObject* gMeshObj = nullptr;
 
 float g_fOffsetX = 0.0f;
 float g_fOffsetY = 0.0f;
 float g_fSpeedX = 0.02f;
 float g_fSpeedY = 0.02f;
-
-float g_fRot0 = 0.0f;
-float g_fRot1 = 0.0f;
-
-XMMATRIX g_matWorld0 = {};
-XMMATRIX g_matWorld1 = {};
 
 
 ULONGLONG g_PrvFrameCheckTick = 0;
@@ -63,7 +57,6 @@ BOOL CGame::Initialiize(HWND hWnd, BOOL bEnableDebugLayer, BOOL bEnableGBV)
 	m_hWnd = hWnd;
 
 
-	gMeshObj = (CBasicMeshObject*)CreateBoxMeshObject();
 
 	g_pSpriteObj0 = m_pRenderer->CreateSpriteObject(L"./Assets/Textures/tex_03.dds", 0, 0, 256, 256);
 	gTextureHandle = (TextureHandle*)m_pRenderer->CreateTextureFromFile(L"./Assets/Textures/sprite_1024x1024.dds");
@@ -89,6 +82,20 @@ BOOL CGame::Initialiize(HWND hWnd, BOOL bEnableDebugLayer, BOOL bEnableGBV)
 	g_pSpriteObjCommon = m_pRenderer->CreateSpriteObject();
 
 
+	const DWORD GAME_OBJ_COUNT = 1000;
+	for (DWORD i = 0; i < GAME_OBJ_COUNT; i++)
+	{
+		CGameObject* pGameObj = CreateGameObject();
+		if (pGameObj)
+		{
+			float x = (float)((rand() % 21) - 10);	// -10m - 10m 
+			float y = 0.0f;
+			float z = (float)((rand() % 21) - 10);	// -10m - 10m 
+			pGameObj->SetPosition(x, y, z);
+			float rad = (rand() % 181) * (3.1415f / 180.0f);
+			pGameObj->SetRotationY(rad);
+		}
+	}
 	return TRUE;
 }
 
@@ -141,116 +148,85 @@ bool CGame::Update(UINT64 CurTick)
 	}
 
 
+	for(void* pGameobj : GameObjectArray)
+	{
+		if(CGameObject* pGameObject = (CGameObject*)pGameobj)
+		{
+			pGameObject->Update();
+		}
+	}
+
+
 	//
 		// world matrix 0
 		//
-	g_matWorld0 = XMMatrixIdentity();
-
-	// rotation 
-	XMMATRIX matRot0 = XMMatrixRotationX(g_fRot0);
-
-	// translation
-	XMMATRIX matTrans0 = XMMatrixTranslation(-0.15f, 0.0f, 0.25f);
-
-	// rot0 x trans0
-	g_matWorld0 = XMMatrixMultiply(matRot0, matTrans0);
-
-	//
-	// world matrix 1
-	//
-	g_matWorld1 = XMMatrixIdentity();
-
-	// world matrix 1
-	// rotation 
-	XMMATRIX matRot1 = XMMatrixRotationY(g_fRot1);
-
-	// translation
-	XMMATRIX matTrans1 = XMMatrixTranslation(0.15f, 0.0f, 0.25f);
-
-	// rot1 x trans1
-	g_matWorld1 = XMMatrixMultiply(matRot1, matTrans1);
-
-	BOOL	bChangeTex = FALSE;
-	g_fRot0 += 0.05f;
-	if (g_fRot0 > 2.0f * 3.1415f)
-	{
-		g_fRot0 = 0.0f;
-		bChangeTex = TRUE;
-	}
-
-	g_fRot1 += 0.1f;
-	if (g_fRot1 > 2.0f * 3.1415f)
-	{
-		g_fRot1 = 0.0f;
-	}
+	
 
 
 
+	//// Update Texture
+	//static DWORD g_dwCount = 0;
+	//static DWORD g_dwTileColorR = 0;
+	//static DWORD g_dwTileColorG = 0;
+	//static DWORD g_dwTileColorB = 0;
+
+	//const DWORD TILE_WIDTH = 16;
+	//const DWORD TILE_HEIGHT = 16;
+
+	//DWORD TILE_WIDTH_COUNT = g_ImageWidth / TILE_WIDTH;
+	//DWORD TILE_HEIGHT_COUNT = g_ImageHeight / TILE_HEIGHT;
+
+	//if (g_dwCount >= TILE_WIDTH_COUNT * TILE_HEIGHT_COUNT)
+	//{
+	//	g_dwCount = 0;
+	//}
+	//DWORD TileY = g_dwCount / TILE_WIDTH_COUNT;
+	//DWORD TileX = g_dwCount % TILE_WIDTH_COUNT;
+
+	//DWORD StartX = TileX * TILE_WIDTH;
+	//DWORD StartY = TileY * TILE_HEIGHT;
 
 
-	// Update Texture
-	static DWORD g_dwCount = 0;
-	static DWORD g_dwTileColorR = 0;
-	static DWORD g_dwTileColorG = 0;
-	static DWORD g_dwTileColorB = 0;
+	////DWORD r = rand() % 256;
+	////DWORD g = rand() % 256;
+	////DWORD b = rand() % 256;
 
-	const DWORD TILE_WIDTH = 16;
-	const DWORD TILE_HEIGHT = 16;
-
-	DWORD TILE_WIDTH_COUNT = g_ImageWidth / TILE_WIDTH;
-	DWORD TILE_HEIGHT_COUNT = g_ImageHeight / TILE_HEIGHT;
-
-	if (g_dwCount >= TILE_WIDTH_COUNT * TILE_HEIGHT_COUNT)
-	{
-		g_dwCount = 0;
-	}
-	DWORD TileY = g_dwCount / TILE_WIDTH_COUNT;
-	DWORD TileX = g_dwCount % TILE_WIDTH_COUNT;
-
-	DWORD StartX = TileX * TILE_WIDTH;
-	DWORD StartY = TileY * TILE_HEIGHT;
+	//DWORD r = g_dwTileColorR;
+	//DWORD g = g_dwTileColorG;
+	//DWORD b = g_dwTileColorB;
 
 
-	//DWORD r = rand() % 256;
-	//DWORD g = rand() % 256;
-	//DWORD b = rand() % 256;
+	//DWORD* pDest = (DWORD*)g_pImage;
+	//for (DWORD y = 0; y < 16; y++)
+	//{
+	//	for (DWORD x = 0; x < 16; x++)
+	//	{
+	//		if (StartX + x >= g_ImageWidth)
+	//			__debugbreak();
 
-	DWORD r = g_dwTileColorR;
-	DWORD g = g_dwTileColorG;
-	DWORD b = g_dwTileColorB;
+	//		if (StartY + y >= g_ImageHeight)
+	//			__debugbreak();
 
-
-	DWORD* pDest = (DWORD*)g_pImage;
-	for (DWORD y = 0; y < 16; y++)
-	{
-		for (DWORD x = 0; x < 16; x++)
-		{
-			if (StartX + x >= g_ImageWidth)
-				__debugbreak();
-
-			if (StartY + y >= g_ImageHeight)
-				__debugbreak();
-
-			pDest[(StartX + x) + (StartY + y) * g_ImageWidth] = 0xff000000 | (b << 16) | (g << 8) | r;
-		}
-	}
-	g_dwCount++;
-	g_dwTileColorR += 8;
-	if (g_dwTileColorR > 255)
-	{
-		g_dwTileColorR = 0;
-		g_dwTileColorG += 8;
-	}
-	if (g_dwTileColorG > 255)
-	{
-		g_dwTileColorG = 0;
-		g_dwTileColorB += 8;
-	}
-	if (g_dwTileColorB > 255)
-	{
-		g_dwTileColorB = 0;
-	}
-	m_pRenderer->UpdateTextureWithImage(gDynamicTextureHandle, g_pImage, g_ImageWidth, g_ImageHeight);
+	//		pDest[(StartX + x) + (StartY + y) * g_ImageWidth] = 0xff000000 | (b << 16) | (g << 8) | r;
+	//	}
+	//}
+	//g_dwCount++;
+	//g_dwTileColorR += 8;
+	//if (g_dwTileColorR > 255)
+	//{
+	//	g_dwTileColorR = 0;
+	//	g_dwTileColorG += 8;
+	//}
+	//if (g_dwTileColorG > 255)
+	//{
+	//	g_dwTileColorG = 0;
+	//	g_dwTileColorB += 8;
+	//}
+	//if (g_dwTileColorB > 255)
+	//{
+	//	g_dwTileColorB = 0;
+	//}
+	//m_pRenderer->UpdateTextureWithImage(gDynamicTextureHandle, g_pImage, g_ImageWidth, g_ImageHeight);
 
 
 
@@ -264,7 +240,7 @@ bool CGame::Update(UINT64 CurTick)
 
 	if (wcscmp(g_wchText, wchTxt))
 	{
-		// ÅØ½ºÆ®°¡ º¯°æµÈ °æ¿ì
+		// í…ìŠ¤íŠ¸ê°€ ë³€ê²½ëœ ê²½ìš°
 		
 
 		memset(g_pTextImage, 0, g_TextImageWidth * g_TextImageHeight * 4);
@@ -274,7 +250,7 @@ bool CGame::Update(UINT64 CurTick)
 	}
 	else
 	{
-		// ÅØ½ºÆ®°¡ º¯°æµÇÁö ¾ÊÀº °æ¿ì - ¾÷µ¥ÀÌÆ® ÇÒ ÇÊ¿ä ¾ø´Ù.
+		// í…ìŠ¤íŠ¸ê°€ ë³€ê²½ë˜ì§€ ì•Šì€ ê²½ìš° - ì—…ë°ì´íŠ¸ í•  í•„ìš” ì—†ë‹¤.
 		int a = 0;
 	}
 
@@ -292,11 +268,14 @@ void CGame::Render()
 	m_pRenderer->BeginRender();
 
 
+	for (void* pGameobj : GameObjectArray)
+	{
+		if (CGameObject* pGameObject = (CGameObject*)pGameobj)
+		{
+			pGameObject->Render();
+		}
+	}
 
-
-
-	m_pRenderer->RenderMeshObject(gMeshObj, &g_matWorld0);
-	m_pRenderer->RenderMeshObject(gMeshObj, &g_matWorld1);
 
 
 	/*sprite*/
@@ -321,7 +300,7 @@ void CGame::Render()
 
 void CGame::Cleanup()
 {
-	
+	DeleteAllGameObject();
 	if (g_pImage)
 	{
 		delete g_pImage;
@@ -331,8 +310,7 @@ void CGame::Cleanup()
 
 	if (m_pRenderer)
 	{
-		m_pRenderer->DeleteBasicMeshObject(gMeshObj);
-		gMeshObj = nullptr;
+
 
 		m_pRenderer->DeleteSpriteObject(g_pSpriteObj0);
 		g_pSpriteObj0 = nullptr;
@@ -430,42 +408,43 @@ void CGame::OnKeyUp(UINT nChar, UINT uiScanCode)
 	}
 }
 
-void* CGame::CreateBoxMeshObject()
+class CD3D12Renderer* CGame::GetRenderer() const
 {
-	void* pMeshObj = nullptr;
+	return m_pRenderer;
+}
 
-	// create box mesh
-	// create vertices and indices
-	WORD	pIndexList[36] = {};
-	BasicVertex* pVertexList = nullptr;
-	DWORD dwVertexCount = CreateBoxMesh(&pVertexList, pIndexList, (DWORD)_countof(pIndexList), 0.25f);
+class CGameObject* CGame::CreateGameObject()
+{
+	CGameObject* pGameObject = new CGameObject{};
+	pGameObject->initialize(this);
+	GameObjectArray.push_back(pGameObject);
+	return pGameObject;
+}
 
-	// create CBasicMeshObject from Renderer
-	pMeshObj = m_pRenderer->CreateBasicMeshObject();
-
-	const WCHAR* wchTexFileNameList[6] =
+void CGame::DeleteGameObject(class CGameObject* pGameObject)
+{
+	if(!pGameObject)
 	{
-		L"./Assets/Textures/tex_01.dds",
-		L"./Assets/Textures/tex_02.dds",
-		L"./Assets/Textures/tex_03.dds",
-		L"./Assets/Textures/tex_04.dds",
-		L"./Assets/Textures/tex_05.dds",
-		L"./Assets/Textures/tex_07.dds" // intentionally wrong texture
-	};
-
-	// Set meshes to the CBasicMeshObject
-	m_pRenderer->InsertVertexDataToMeshObject(pMeshObj, pVertexList, dwVertexCount, 6);	// ¹Ú½ºÀÇ 6¸é-1¸é´ç »ï°¢Çü 2°³-ÀÎµ¦½º 6°³
-	for (DWORD i = 0; i < 6; i++)
-	{
-		m_pRenderer->InsertTriGroupDataToMeshObject(pMeshObj, pIndexList + i * 6, 2, wchTexFileNameList[i]);
+		return;
 	}
-	m_pRenderer->EndCreateMesh(pMeshObj);
 
-	// delete vertices and indices
-	if (pVertexList)
+	auto it = std::find(GameObjectArray.begin(), GameObjectArray.end(), pGameObject);
+	if(it != GameObjectArray.end())
 	{
-		DeleteBoxMesh(pVertexList);
-		pVertexList = nullptr;
+		delete pGameObject;
+		GameObjectArray.erase(it);
 	}
-	return pMeshObj;
+}
+
+void CGame::DeleteAllGameObject()
+{
+	for(void* pGameObject : GameObjectArray)
+	{
+		if(CGameObject* pGameobj = (CGameObject*)pGameObject)
+		{
+			delete pGameobj;
+		}
+	}
+
+	GameObjectArray.resize(0);
 }

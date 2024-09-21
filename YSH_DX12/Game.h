@@ -1,5 +1,5 @@
 #pragma once
-
+#include <vector>
 
 //test
 class CGame
@@ -14,6 +14,7 @@ public:
 	void	OnKeyDown(UINT nChar, UINT uiScanCode);
 	void	OnKeyUp(UINT nChar, UINT uiScanCode);
 
+	class CD3D12Renderer* GetRenderer()const;
 
 private:
 	bool Update(UINT64 CurTick);
@@ -22,9 +23,9 @@ private:
 	void Cleanup();
 
 
-
-	
-	void* CreateBoxMeshObject();
+	class CGameObject* CreateGameObject();
+	void DeleteGameObject(class CGameObject* pGameObject);
+	void DeleteAllGameObject();
 
 private:
 	class CD3D12Renderer* m_pRenderer = nullptr;
@@ -42,6 +43,10 @@ private:
 
 
 	BOOL	m_bShiftKeyDown = FALSE;
+
+	std::vector<void*> GameObjectArray;
+
+	
 
 
 };

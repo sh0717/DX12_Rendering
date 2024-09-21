@@ -2,23 +2,23 @@
 //
 
 /*
-	 \\\\\\ ÄÚµùÄÁº¥¼Ç\\\\\
+	 \\\\\\ ì½”ë”©ì»¨ë²¤ì…˜\\\\\
 
 
-	Å¬·¡½º´Â CamelCase 
-	ÇÔ¼öµµ CamelCase 
+	í´ëž˜ìŠ¤ëŠ” CamelCase 
+	í•¨ìˆ˜ë„ CamelCase 
 
-	¸â¹ö º¯¼öÀÇ °æ¿ì m_ À» ºÙÀÌ°í 
-	º¯¼ö¿¡ pointer , ÀÌÁßÆ÷ÀÎÅÍ ÀÏ¶§´Â p, pp ¸¦ ºÙÀÎ´Ù 
+	ë©¤ë²„ ë³€ìˆ˜ì˜ ê²½ìš° m_ ì„ ë¶™ì´ê³  
+	ë³€ìˆ˜ì— pointer , ì´ì¤‘í¬ì¸í„° ì¼ë•ŒëŠ” p, pp ë¥¼ ë¶™ì¸ë‹¤ 
 
 	=> m_pVertexBuffer
 
-	ÀÎÀÚ³ª ·ÎÄÃÀÇ °æ¿ì¿¡´Â m_ ¸¦ ºÙÀÌÁö ¾Ê´Â´Ù 
+	ì¸ìžë‚˜ ë¡œì»¬ì˜ ê²½ìš°ì—ëŠ” m_ ë¥¼ ë¶™ì´ì§€ ì•ŠëŠ”ë‹¤ 
 
-	But ÇØ´ç ½ºÅÃ¿¡¼­ Release ¸¦ ÇØ¾ßÇÏ´Â °æ¿ì 
-	t_ ¸¦ ºÙÀÎ´Ù
+	But í•´ë‹¹ ìŠ¤íƒì—ì„œ Release ë¥¼ í•´ì•¼í•˜ëŠ” ê²½ìš° 
+	t_ ë¥¼ ë¶™ì¸ë‹¤
 
-	global Àº g_ ¸¦ ºÙÀÎ´Ù
+	global ì€ g_ ë¥¼ ë¶™ì¸ë‹¤
 
 */
 
@@ -140,7 +140,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 
 	g_pGame = new CGame{};
-	g_pGame->Initialiize(g_hMainWindow, TRUE, TRUE);
+	g_pGame->Initialiize(g_hMainWindow, FALSE, FALSE);
 
 
 	while (1)
