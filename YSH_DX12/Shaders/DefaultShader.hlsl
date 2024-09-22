@@ -1,4 +1,4 @@
-Texture2D texDiffuse : register(t0);
+Texture2D texDiffuse : register(t0);   
 SamplerState samplerDiffuse	: register(s0);
 cbuffer CONSTANT_BUFFER_DEFAULT : register(b0)
 {

@@ -3,10 +3,10 @@
 /*
  *
  *CPU Write - GPU Read
-pGPUMemberAddr is resource GPU-½ÃÁ¡ address (°øÀ¯ ¸Ş¸ğ¸®)
+pGPUMemberAddr is resource GPU-ì‹œì  address (ê³µìœ  ë©”ëª¨ë¦¬)
 pSystemMemberAddr is mapped address
 
-System Side ¿¡ Constantbuffer memory ¸¦ »ı¼ºÇÑ´Ù 
+System Side ì— Constantbuffer memory ë¥¼ ìƒì„±í•œë‹¤ 
 */
 
 struct CB_Container 
@@ -38,6 +38,8 @@ struct CB_Container
 	And AllocateConstantBuffer only allocate one buffer at one call
 */
 
+/* In D3D12  Heap is aligned by 64kb */
+
 
 class CConstantBufferPool
 {
@@ -46,7 +48,7 @@ public: /*function*/
 
 	~CConstantBufferPool();
 
-	bool Initialize(ID3D12Device* pD3DDevice, CONSTANT_BUFFER_TYPE type , UINT SizePerCBV, UINT MaxCBVCount);
+	bool Initialize(ID3D12Device* pD3DDevice, EConstantBufferType type , UINT SizePerCBV, UINT MaxCBVCount);
 
 	CB_Container* AllocateConstantBuffer();
 
@@ -67,6 +69,6 @@ private:
 	UINT m_AllocatedCBVCount = 0;
 
 
-	CONSTANT_BUFFER_TYPE mConstantBufferType;
+	EConstantBufferType mConstantBufferType;
 };
 

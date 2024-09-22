@@ -42,6 +42,8 @@ private:
 	float m_CamOffsetZ = 0.0f;
 
 
+	void* m_pSpriteObjectTest = nullptr;
+
 	BOOL	m_bShiftKeyDown = FALSE;
 
 	std::vector<void*> GameObjectArray;

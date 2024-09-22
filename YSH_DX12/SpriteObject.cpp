@@ -61,8 +61,11 @@ bool CSpriteObject::Initialize(class CD3D12Renderer* p_renderer, const WCHAR* Te
 		if(pRect)
 		{
 			m_TextureRect = *pRect;
-			m_Scale.x = (float)(m_TextureRect.right - m_TextureRect.left) / (float)TexWidth;
-			m_Scale.y = (float)(m_TextureRect.bottom - m_TextureRect.top) / (float)TexHeight;
+			if(m_pTextureHandle)
+			{
+				m_Scale.x = (float)(m_TextureRect.right - m_TextureRect.left) / (float)TexWidth;
+				m_Scale.y = (float)(m_TextureRect.bottom - m_TextureRect.top) / (float)TexHeight;
+			}
 		}
 		else
 		{
@@ -91,7 +94,7 @@ void CSpriteObject::Draw(ID3D12GraphicsCommandList* pCommandList, const XMFLOAT2
 	UINT SRVDescriptorSize = m_pRenderer->Get_CBV_SRV_UAV_DescriptorSize();
 	CDescriptorPool* pDescriptorPool = m_pRenderer->GetDescriptorPool();
 	ID3D12DescriptorHeap* pDescriptorHeap = pDescriptorPool->GetDescriptorHeap();
-	CConstantBufferPool* pConstantBufferPool = m_pRenderer->GetConstantBufferPool(CONSTANT_BUFFER_TYPE_SPRITE);
+	CConstantBufferPool* pConstantBufferPool = m_pRenderer->GetConstantBufferPool(EConstantBufferType::SpriteObject);
 
 
 	UINT TexWidth = 0;
@@ -146,7 +149,7 @@ void CSpriteObject::Draw(ID3D12GraphicsCommandList* pCommandList, const XMFLOAT2
 
 	CONSTANT_BUFFER_SPRITE* pConstantBufferSprite = (CONSTANT_BUFFER_SPRITE*)pCB->pSystemMemberAddr;
 
-	// constant bufferÀÇ ³»¿ëÀ» ¼³Á¤
+	// constant bufferì˜ ë‚´ìš©ì„ ì„¤ì •
 	pConstantBufferSprite->ScreenRes.x = (float)m_pRenderer->GetScreenWidth();
 	pConstantBufferSprite->ScreenRes.y = (float)m_pRenderer->GetScreenHeigt();
 	pConstantBufferSprite->Pos = *pPos;

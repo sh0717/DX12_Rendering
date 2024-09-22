@@ -6,7 +6,7 @@ l
 	Type is Pascal
 */
 
-constexpr UINT32 SWAP_CHAIN_FRAME_COUNT = 3;
+constexpr UINT32 SWAP_CHAIN_FRAME_COUNT =4;
 constexpr UINT32 MAX_PENDING_FRAME_COUNT = SWAP_CHAIN_FRAME_COUNT - 1;
 class CD3D12Renderer
 {
@@ -65,7 +65,7 @@ public:/*function*/
 	class CD3D12ResourceManager* GetResourceManager() const { return m_pResourceManager.get(); };
 	class CSingleDescriptorAllocator* GetSingleDescriptorAllocator() const{ return m_pSingleDescriptorAllocator.get(); }
 	class CDescriptorPool* GetDescriptorPool() const { return m_ppDescriptorPools[m_CurContextIndex]; }
-	class CConstantBufferPool* GetConstantBufferPool(CONSTANT_BUFFER_TYPE Type) const;
+	class CConstantBufferPool* GetConstantBufferPool(EConstantBufferType Type) const;
 
 
 	void GetViewProjMatrix(XMMATRIX* pOutViewMatrix, XMMATRIX* pOutProjMatrix);
@@ -107,10 +107,12 @@ private: /*variable*/
 	static constexpr UINT MAX_DESCRIPTOR_COUNT = 4096;
 
 
+
 	std::unique_ptr<class CD3D12ResourceManager> m_pResourceManager;
 	std::unique_ptr<class CSingleDescriptorAllocator> m_pSingleDescriptorAllocator;
 	class CDescriptorPool* m_ppDescriptorPools[MAX_PENDING_FRAME_COUNT] = {};
 	class CConstantBufferManager* m_ppConstantBufferManager[MAX_PENDING_FRAME_COUNT] = {};
+	class CRenderQueue* m_pRenderQueue = nullptr;
 	//class CConstantBufferPool* m_ppConstantBufferPools[MAX_PENDING_FRAME_COUNT] = {};
 
 	//std::unique_ptr<class CDescriptorPool[]> TestDescriptorPools;
@@ -118,6 +120,7 @@ private: /*variable*/
 
 	std::unique_ptr<class CFontManager> m_pFontManager;
 	class CTextureManager* m_pTextureManager;
+	
 
 	HWND	m_HWND = nullptr;
 	ID3D12Device5*	m_pD3DDevice = nullptr;

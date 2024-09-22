@@ -201,6 +201,7 @@
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="RenderQueue.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="SingleDescriptorAllocator.h" />
     <ClInclude Include="SpriteObject.h" />
@@ -234,6 +235,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="RenderQueue.cpp" />
     <ClCompile Include="SingleDescriptorAllocator.cpp" />
     <ClCompile Include="SpriteObject.cpp" />
     <ClCompile Include="TextureManager.cpp" />

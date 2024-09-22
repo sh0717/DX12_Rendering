@@ -11,16 +11,16 @@ struct BasicVertex
 	XMFLOAT2 TexCoord;
 };
 
-enum CONSTANT_BUFFER_TYPE
+enum class EConstantBufferType
 {
-	CONSTANT_BUFFER_TYPE_DEFAULT,
-	CONSTANT_BUFFER_TYPE_SPRITE,
-	CONSTANT_BUFFER_TYPE_COUNT
+	MeshObject = 0,
+	SpriteObject = 1,
+	TypeCount = 2
 };
 
 struct CONSTANT_BUFFER_PROPERTY
 {
-	CONSTANT_BUFFER_TYPE type;
+	EConstantBufferType type;
 	UINT Size;
 };
 
@@ -92,4 +92,39 @@ struct FLOAT3
 	float x;
 	float y;
 	float z;
+};
+
+
+enum class ERenderItemType
+{
+	MeshObject,
+	SpriteObject
+};
+
+struct RenderMeshObjParam
+{
+	XMMATRIX WorldMatrix;
+};
+
+struct RenderSpriteObjParam
+{
+	int iPosX;
+	int iPosY;
+	float fScaleX;
+	float fScaleY;
+	RECT Rect;
+	BOOL bUseRect;
+	float Z;
+	void* pTexHandle;
+};
+
+struct RenderItem
+{
+	ERenderItemType Type;
+	void* pObjectHandle;
+	union
+	{
+		RenderMeshObjParam MeshObjectParam;
+		RenderSpriteObjParam SpriteObjectParam;
+	};
 };

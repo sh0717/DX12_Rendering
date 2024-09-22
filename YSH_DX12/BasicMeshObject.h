@@ -36,7 +36,7 @@ public:/*function*/
 	bool Initialize(class CD3D12Renderer* pRenderer);
 
 	
-	void Draw(ID3D12GraphicsCommandList* pCommandList,  XMMATRIX* pWorldMatrix );
+	void Draw(ID3D12GraphicsCommandList* pCommandList,const XMMATRIX* pWorldMatrix );
 
 	//Input Vertex Data and Make Vertex buffer and Vertex Buffer View 
 	bool InsertVertexData(const BasicVertex* pVertexList, UINT VertexCount, UINT TrigroupCount);

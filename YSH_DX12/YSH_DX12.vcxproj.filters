@@ -28,9 +28,6 @@
     <Filter Include="Util">
       <UniqueIdentifier>{72b86337-a0db-45ee-b08e-86768b800744}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Renderer\ConstantBufferPool">
-      <UniqueIdentifier>{70383645-4605-4429-8fda-acddf487656b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="DirectXTex">
       <UniqueIdentifier>{89cbb6f9-31c2-45ed-84d4-ca7db8425d0f}</UniqueIdentifier>
     </Filter>
@@ -55,6 +52,12 @@
     <Filter Include="Game">
       <UniqueIdentifier>{4f7841d8-8197-49e8-be98-6c1c3b748570}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Renderer\D3D12Renderer\RenderHelper">
+      <UniqueIdentifier>{59dd4f7c-f4d6-4781-afa5-e17d49e87298}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Renderer\D3D12Renderer\RenderHelper\ConstantBufferPool">
+      <UniqueIdentifier>{70383645-4605-4429-8fda-acddf487656b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="targetver.h">
@@ -62,9 +65,6 @@
     </ClInclude>
     <ClInclude Include="pch.h">
       <Filter>pch</Filter>
-    </ClInclude>
-    <ClInclude Include="D3D12Renderer.h">
-      <Filter>Renderer\D3D12Renderer</Filter>
     </ClInclude>
     <ClInclude Include="..\D3D_Util\D3DUtil.h">
       <Filter>Util</Filter>
@@ -76,13 +76,7 @@
       <Filter>typdef</Filter>
     </ClInclude>
     <ClInclude Include="ConstantBufferPool.h">
-      <Filter>Renderer\ConstantBufferPool</Filter>
-    </ClInclude>
-    <ClInclude Include="DescriptorPool.h">
-      <Filter>Renderer\D3D12Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="SingleDescriptorAllocator.h">
-      <Filter>Renderer\D3D12Renderer</Filter>
+      <Filter>Renderer\D3D12Renderer\RenderHelper\ConstantBufferPool</Filter>
     </ClInclude>
     <ClInclude Include="..\Util\IndexCreator.h">
       <Filter>Util</Filter>
@@ -100,7 +94,7 @@
       <Filter>Renderer\Object\SpriteObject</Filter>
     </ClInclude>
     <ClInclude Include="ConstantBufferManager.h">
-      <Filter>Renderer\ConstantBufferPool</Filter>
+      <Filter>Renderer\D3D12Renderer\RenderHelper\ConstantBufferPool</Filter>
     </ClInclude>
     <ClInclude Include="D3D12ResourceManager.h">
       <Filter>Renderer\ResourceManager</Filter>
@@ -126,6 +120,18 @@
     <ClInclude Include="Resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="DescriptorPool.h">
+      <Filter>Renderer\D3D12Renderer\RenderHelper</Filter>
+    </ClInclude>
+    <ClInclude Include="SingleDescriptorAllocator.h">
+      <Filter>Renderer\D3D12Renderer\RenderHelper</Filter>
+    </ClInclude>
+    <ClInclude Include="D3D12Renderer.h">
+      <Filter>Renderer\D3D12Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderQueue.h">
+      <Filter>Renderer\D3D12Renderer\RenderHelper</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -134,9 +140,6 @@
     <ClCompile Include="pch.cpp">
       <Filter>pch</Filter>
     </ClCompile>
-    <ClCompile Include="D3D12Renderer.cpp">
-      <Filter>Renderer\D3D12Renderer</Filter>
-    </ClCompile>
     <ClCompile Include="..\D3D_Util\D3DUtil.cpp">
       <Filter>Util</Filter>
     </ClCompile>
@@ -144,13 +147,7 @@
       <Filter>Renderer\Object\MeshObject</Filter>
     </ClCompile>
     <ClCompile Include="ConstantBufferPool.cpp">
-      <Filter>Renderer\ConstantBufferPool</Filter>
-    </ClCompile>
-    <ClCompile Include="DescriptorPool.cpp">
-      <Filter>Renderer\D3D12Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="SingleDescriptorAllocator.cpp">
-      <Filter>Renderer\D3D12Renderer</Filter>
+      <Filter>Renderer\D3D12Renderer\RenderHelper\ConstantBufferPool</Filter>
     </ClCompile>
     <ClCompile Include="..\Util\IndexCreator.cpp">
       <Filter>Util</Filter>
@@ -165,7 +162,7 @@
       <Filter>Renderer\Object\SpriteObject</Filter>
     </ClCompile>
     <ClCompile Include="ConstantBufferManager.cpp">
-      <Filter>Renderer\ConstantBufferPool</Filter>
+      <Filter>Renderer\D3D12Renderer\RenderHelper\ConstantBufferPool</Filter>
     </ClCompile>
     <ClCompile Include="D3D12ResourceManager.cpp">
       <Filter>Renderer\ResourceManager</Filter>
@@ -187,6 +184,18 @@
     </ClCompile>
     <ClCompile Include="GameObject.cpp">
       <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="DescriptorPool.cpp">
+      <Filter>Renderer\D3D12Renderer\RenderHelper</Filter>
+    </ClCompile>
+    <ClCompile Include="SingleDescriptorAllocator.cpp">
+      <Filter>Renderer\D3D12Renderer\RenderHelper</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D12Renderer.cpp">
+      <Filter>Renderer\D3D12Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderQueue.cpp">
+      <Filter>Renderer\D3D12Renderer\RenderHelper</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

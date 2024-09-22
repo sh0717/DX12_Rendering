@@ -17,6 +17,7 @@
 #include "SpriteObject.h"
 #include "ConstantBufferManager.h"
 #include "FontManager.h"
+#include "RenderQueue.h"
 #include "TextureManager.h"
 
 //한글?
@@ -227,6 +228,9 @@ lb_exit:
 		m_pFontManager->Initialize(this, m_pCommandQueue, 1024, 256, bEnableDebugLayer);
 	}
 
+	m_pRenderQueue = new CRenderQueue{};
+	m_pRenderQueue->Initialize(this, 8192);
+
 
 	InitCamera();
 
@@ -290,11 +294,15 @@ void CD3D12Renderer::BeginRender()
 void CD3D12Renderer::EndRender()
 {
 	ID3D12GraphicsCommandList* pCommandList = m_ppCommandLists[m_CurContextIndex];
+
+	m_pRenderQueue->Process(pCommandList);
+
 	pCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(m_pRenderTargets[m_CurrentRenderTargetIndex], D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT));
 	pCommandList->Close();
-	
 	ID3D12CommandList* ppCommandLists[] = { pCommandList };
     m_pCommandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
+
+	m_pRenderQueue->Reset();
 }
 
 void CD3D12Renderer::Present()
@@ -476,18 +484,28 @@ void CD3D12Renderer::EndCreateMesh(void* pMeshObjHandle)
 
 void CD3D12Renderer::RenderMeshObject(void* MeshObjHandle , XMMATRIX* pWorldMatrix)
 {
-	ID3D12GraphicsCommandList* pCommandList = m_ppCommandLists[m_CurContextIndex];
+//	ID3D12GraphicsCommandList* pCommandList = m_ppCommandLists[m_CurContextIndex];
+//
+//	if (CBasicMeshObject* MeshObj = (CBasicMeshObject*)MeshObjHandle) 
+//	{
+//			MeshObj->Draw(pCommandList, pWorldMatrix);
+//	}
+//#ifdef _DEBUG
+//	else
+//	{
+//		std::cerr << "CD3D12Renderer::RenderMeshObject(void* MeshObjHandle , XMMATRIX* pWorldMatrix)  With nullptr \n";
+//	}
+//#endif
+	RenderItem item;
+	item.Type = ERenderItemType::MeshObject;
+	item.pObjectHandle = MeshObjHandle;
+	item.MeshObjectParam.WorldMatrix = *pWorldMatrix;
 
-	if (CBasicMeshObject* MeshObj = (CBasicMeshObject*)MeshObjHandle) 
+	bool bResult = m_pRenderQueue->Add(&item);
+	if(!bResult)
 	{
-			MeshObj->Draw(pCommandList, pWorldMatrix);
+		__debugbreak();
 	}
-#ifdef _DEBUG
-	else
-	{
-		std::cerr << "CD3D12Renderer::RenderMeshObject(void* MeshObjHandle , XMMATRIX* pWorldMatrix)  With nullptr \n";
-	}
-#endif
 }
 
 void* CD3D12Renderer::CreateSpriteObject()
@@ -526,7 +544,7 @@ void CD3D12Renderer::DeleteSpriteObject(void* pSpriteObjHandle)
 void CD3D12Renderer::RenderSpriteObject(void* pSpriteObjectHandle, INT PosX, INT PosY, float ScaleX, float ScaleY, float Z)
 {
 
-	ID3D12GraphicsCommandList* pCommandList = m_ppCommandLists[m_CurContextIndex];
+	/*ID3D12GraphicsCommandList* pCommandList = m_ppCommandLists[m_CurContextIndex];
 
 	if(CSpriteObject* pSpriteObj = (CSpriteObject*)pSpriteObjectHandle)
 	{
@@ -539,14 +557,26 @@ void CD3D12Renderer::RenderSpriteObject(void* pSpriteObjectHandle, INT PosX, INT
 	{
 		std::cerr << "CD3D12Renderer::RenderSpriteObject(void* pSpriteObjectHandle, INT PosX, INT PosY, float ScaleX, float ScaleY, float Z) With nullptr \n";
 	}
-#endif
+#endif*/
+	RenderItem item;
+	item.Type = ERenderItemType::SpriteObject;
+	item.pObjectHandle = pSpriteObjectHandle;
+	item.SpriteObjectParam.iPosX = PosX;
+	item.SpriteObjectParam.iPosY = PosY;
+	item.SpriteObjectParam.fScaleX = ScaleX;
+	item.SpriteObjectParam.fScaleY = ScaleY;
+	item.SpriteObjectParam.bUseRect = FALSE;
+	item.SpriteObjectParam.Rect = {};
+	item.SpriteObjectParam.pTexHandle = nullptr;
+	item.SpriteObjectParam.Z = Z;
 
-	
+	if (!m_pRenderQueue->Add(&item))
+		__debugbreak();
 }
 
 void CD3D12Renderer::RenderSpriteObject(void* pSprObjHandle, int iPosX, int iPosY, float fScaleX, float fScaleY, const RECT* pRect, float Z, void* pTexHandle)
 {
-	ID3D12GraphicsCommandList* pCommandList = m_ppCommandLists[m_CurContextIndex];
+	/*ID3D12GraphicsCommandList* pCommandList = m_ppCommandLists[m_CurContextIndex];
 
 	if (CSpriteObject* pSpriteObj = (CSpriteObject*)pSprObjHandle)
 	{
@@ -568,6 +598,33 @@ void CD3D12Renderer::RenderSpriteObject(void* pSprObjHandle, int iPosX, int iPos
 		}
 
 		pSpriteObj->Draw(pCommandList, &Pos, &Scale, pRect, Z, pTextureHandle);
+	}*/
+
+	RenderItem Item;
+	Item.Type = ERenderItemType::SpriteObject;
+	Item.pObjectHandle = pSprObjHandle;
+	Item.SpriteObjectParam.iPosX = iPosX;
+	Item.SpriteObjectParam.iPosY = iPosY;
+	Item.SpriteObjectParam.fScaleX = fScaleX;
+	Item.SpriteObjectParam.fScaleY = fScaleY;
+
+	if(pRect)
+	{
+		Item.SpriteObjectParam.bUseRect = true;
+		Item.SpriteObjectParam.Rect = *pRect;
+	}
+	else
+	{
+		Item.SpriteObjectParam.bUseRect = false;
+		Item.SpriteObjectParam.Rect = {};
+	}
+
+	Item.SpriteObjectParam.pTexHandle = pTexHandle;
+	Item.SpriteObjectParam.Z = Z;
+
+	if(!m_pRenderQueue->Add(&Item))
+	{
+		__debugbreak();
 	}
 }
 
@@ -632,7 +689,13 @@ void* CD3D12Renderer::CreateTiledTexture(UINT TexWidth, UINT TexHeight, UINT32 R
 
 void* CD3D12Renderer::CreateTextureFromFile(const WCHAR* wchFileName) const 
 {
-	return m_pTextureManager->CreateTextureFromFile(wchFileName);
+	TextureHandle* pTextureHandle = nullptr;
+	if(pTextureHandle = m_pTextureManager->CreateTextureFromFile(wchFileName))
+	{
+		return pTextureHandle;
+	}
+
+	return m_DefaultTextureHandle;
 }
 
 void* CD3D12Renderer::CreateDynamicTexture(UINT TextureWidth, UINT TextureHeight)
@@ -773,7 +836,7 @@ void CD3D12Renderer::CreateFence()
 }
 
 
-class CConstantBufferPool* CD3D12Renderer::GetConstantBufferPool(CONSTANT_BUFFER_TYPE Type) const
+class CConstantBufferPool* CD3D12Renderer::GetConstantBufferPool(EConstantBufferType Type) const
 {
 	CConstantBufferManager* pConstBufferManager = m_ppConstantBufferManager[m_CurContextIndex];
 	CConstantBufferPool* pConstBufferPool = pConstBufferManager->GetConstantBufferPool(Type);
@@ -969,7 +1032,11 @@ void CD3D12Renderer::Cleanup()
 	CleanupDescriptorHeap();
 	CleanupCommandListAndQueue();
 	CleanupResource();
-
+	if(m_pRenderQueue)
+	{
+		delete m_pRenderQueue;
+		m_pRenderQueue = nullptr;
+	}
 
 	if(m_pTextureManager)
 	{

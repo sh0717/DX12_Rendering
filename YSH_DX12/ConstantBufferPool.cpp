@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "ConstantBufferPool.h"
 
-/*Upload Resource ´Â  CPU ·Î ¸ÅÇÎ °¡´É */
+/*Upload Resource ëŠ”  CPU ë¡œ ë§¤í•‘ ê°€ëŠ¥ */
 
 CConstantBufferPool::CConstantBufferPool()
 {
@@ -12,7 +12,7 @@ CConstantBufferPool::~CConstantBufferPool()
 	Cleanup();
 }
 
-bool CConstantBufferPool::Initialize(ID3D12Device* pD3DDevice, CONSTANT_BUFFER_TYPE type, UINT SizePerCBV, UINT MaxCBVCount)
+bool CConstantBufferPool::Initialize(ID3D12Device* pD3DDevice, EConstantBufferType type, UINT SizePerCBV, UINT MaxCBVCount)
 {
 	bool bResult = false;
 

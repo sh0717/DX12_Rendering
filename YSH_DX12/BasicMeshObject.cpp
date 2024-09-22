@@ -166,7 +166,7 @@ bool CBasicMeshObject::InitPipelineState()
 		//VertexBuffer 랑 상호간에 맞춰야 됨
 	D3D12_INPUT_ELEMENT_DESC InputElementDescs[] =
 	{
-		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },  //last float is set by one 
 		{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
 		{"TEXCOORD" , 0 , DXGI_FORMAT_R32G32_FLOAT, 0 ,28 ,D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA , 0  } 
 	};
@@ -210,12 +210,12 @@ bool CBasicMeshObject::InitPipelineState()
 
 
 
-void CBasicMeshObject::Draw(ID3D12GraphicsCommandList* pCommandList,  XMMATRIX* pWorldMatrix )
+void CBasicMeshObject::Draw(ID3D12GraphicsCommandList* pCommandList, const XMMATRIX* pWorldMatrix )
 {
 	
 	ID3D12Device5* pD3DDevice = m_pRenderer->GetD3DDevice();
 	CDescriptorPool* pDescriptorPool = m_pRenderer->GetDescriptorPool();
-	CConstantBufferPool* pConstantBufferPool = m_pRenderer->GetConstantBufferPool(CONSTANT_BUFFER_TYPE_DEFAULT);
+	CConstantBufferPool* pConstantBufferPool = m_pRenderer->GetConstantBufferPool(EConstantBufferType::MeshObject);
 
 	if(pDescriptorPool == nullptr)
 	{
@@ -259,9 +259,6 @@ void CBasicMeshObject::Draw(ID3D12GraphicsCommandList* pCommandList,  XMMATRIX* 
 	pD3DDevice->CopyDescriptorsSimple(1, cbvDest, pCB->CBVHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);	// cpu측 코드에서는 cpu descriptor handle에만 write가능
 	
 
-	
-
-	
 	
 
 	CD3DX12_CPU_DESCRIPTOR_HANDLE PerTriDest(CPUDescriptorTable, BASIC_MESH_DESCRIPTOR_COUNT_PER_OBJ, CBV_SRV_UAV_DescriptorSize);

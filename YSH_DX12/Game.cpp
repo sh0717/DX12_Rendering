@@ -58,7 +58,7 @@ BOOL CGame::Initialiize(HWND hWnd, BOOL bEnableDebugLayer, BOOL bEnableGBV)
 
 
 
-	g_pSpriteObj0 = m_pRenderer->CreateSpriteObject(L"./Assets/Textures/tex_03.dds", 0, 0, 256, 256);
+	g_pSpriteObj0 = m_pRenderer->CreateSpriteObject(L"./Assets/Textures/tex_03.dds", 0, 0, 512, 512);
 	gTextureHandle = (TextureHandle*)m_pRenderer->CreateTextureFromFile(L"./Assets/Textures/sprite_1024x1024.dds");
 	gDynamicTextureHandle = (TextureHandle*)m_pRenderer->CreateDynamicTexture(g_ImageWidth, g_ImageHeight);
 	g_pImage = (BYTE*)malloc(g_ImageWidth * g_ImageHeight * 4);
@@ -80,6 +80,9 @@ BOOL CGame::Initialiize(HWND hWnd, BOOL bEnableDebugLayer, BOOL bEnableGBV)
 	memset(g_pTextImage, 0, g_TextImageWidth * g_TextImageHeight * 4);
 	g_pTextTextureHandle = m_pRenderer->CreateDynamicTexture(g_TextImageWidth, g_TextImageHeight);
 	g_pSpriteObjCommon = m_pRenderer->CreateSpriteObject();
+
+
+	
 
 
 	const DWORD GAME_OBJ_COUNT = 1000;
@@ -164,69 +167,69 @@ bool CGame::Update(UINT64 CurTick)
 
 
 
-	//// Update Texture
-	//static DWORD g_dwCount = 0;
-	//static DWORD g_dwTileColorR = 0;
-	//static DWORD g_dwTileColorG = 0;
-	//static DWORD g_dwTileColorB = 0;
+	// Update Texture
+	static DWORD g_dwCount = 0;
+	static DWORD g_dwTileColorR = 0;
+	static DWORD g_dwTileColorG = 0;
+	static DWORD g_dwTileColorB = 0;
 
-	//const DWORD TILE_WIDTH = 16;
-	//const DWORD TILE_HEIGHT = 16;
+	const DWORD TILE_WIDTH = 16;
+	const DWORD TILE_HEIGHT = 16;
 
-	//DWORD TILE_WIDTH_COUNT = g_ImageWidth / TILE_WIDTH;
-	//DWORD TILE_HEIGHT_COUNT = g_ImageHeight / TILE_HEIGHT;
+	DWORD TILE_WIDTH_COUNT = g_ImageWidth / TILE_WIDTH;
+	DWORD TILE_HEIGHT_COUNT = g_ImageHeight / TILE_HEIGHT;
 
-	//if (g_dwCount >= TILE_WIDTH_COUNT * TILE_HEIGHT_COUNT)
-	//{
-	//	g_dwCount = 0;
-	//}
-	//DWORD TileY = g_dwCount / TILE_WIDTH_COUNT;
-	//DWORD TileX = g_dwCount % TILE_WIDTH_COUNT;
+	if (g_dwCount >= TILE_WIDTH_COUNT * TILE_HEIGHT_COUNT)
+	{
+		g_dwCount = 0;
+	}
+	DWORD TileY = g_dwCount / TILE_WIDTH_COUNT;
+	DWORD TileX = g_dwCount % TILE_WIDTH_COUNT;
 
-	//DWORD StartX = TileX * TILE_WIDTH;
-	//DWORD StartY = TileY * TILE_HEIGHT;
-
-
-	////DWORD r = rand() % 256;
-	////DWORD g = rand() % 256;
-	////DWORD b = rand() % 256;
-
-	//DWORD r = g_dwTileColorR;
-	//DWORD g = g_dwTileColorG;
-	//DWORD b = g_dwTileColorB;
+	DWORD StartX = TileX * TILE_WIDTH;
+	DWORD StartY = TileY * TILE_HEIGHT;
 
 
-	//DWORD* pDest = (DWORD*)g_pImage;
-	//for (DWORD y = 0; y < 16; y++)
-	//{
-	//	for (DWORD x = 0; x < 16; x++)
-	//	{
-	//		if (StartX + x >= g_ImageWidth)
-	//			__debugbreak();
+	//DWORD r = rand() % 256;
+	//DWORD g = rand() % 256;
+	//DWORD b = rand() % 256;
 
-	//		if (StartY + y >= g_ImageHeight)
-	//			__debugbreak();
+	DWORD r = g_dwTileColorR;
+	DWORD g = g_dwTileColorG;
+	DWORD b = g_dwTileColorB;
 
-	//		pDest[(StartX + x) + (StartY + y) * g_ImageWidth] = 0xff000000 | (b << 16) | (g << 8) | r;
-	//	}
-	//}
-	//g_dwCount++;
-	//g_dwTileColorR += 8;
-	//if (g_dwTileColorR > 255)
-	//{
-	//	g_dwTileColorR = 0;
-	//	g_dwTileColorG += 8;
-	//}
-	//if (g_dwTileColorG > 255)
-	//{
-	//	g_dwTileColorG = 0;
-	//	g_dwTileColorB += 8;
-	//}
-	//if (g_dwTileColorB > 255)
-	//{
-	//	g_dwTileColorB = 0;
-	//}
-	//m_pRenderer->UpdateTextureWithImage(gDynamicTextureHandle, g_pImage, g_ImageWidth, g_ImageHeight);
+
+	DWORD* pDest = (DWORD*)g_pImage;
+	for (DWORD y = 0; y < 16; y++)
+	{
+		for (DWORD x = 0; x < 16; x++)
+		{
+			if (StartX + x >= g_ImageWidth)
+				__debugbreak();
+
+			if (StartY + y >= g_ImageHeight)
+				__debugbreak();
+
+			pDest[(StartX + x) + (StartY + y) * g_ImageWidth] = 0xff000000 | (b << 16) | (g << 8) | r;
+		}
+	}
+	g_dwCount++;
+	g_dwTileColorR += 8;
+	if (g_dwTileColorR > 255)
+	{
+		g_dwTileColorR = 0;
+		g_dwTileColorG += 8;
+	}
+	if (g_dwTileColorG > 255)
+	{
+		g_dwTileColorG = 0;
+		g_dwTileColorB += 8;
+	}
+	if (g_dwTileColorB > 255)
+	{
+		g_dwTileColorB = 0;
+	}
+	m_pRenderer->UpdateTextureWithImage(gDynamicTextureHandle, g_pImage, g_ImageWidth, g_ImageHeight);
 
 
 
@@ -241,7 +244,6 @@ bool CGame::Update(UINT64 CurTick)
 	if (wcscmp(g_wchText, wchTxt))
 	{
 		// 텍스트가 변경된 경우
-		
 
 		memset(g_pTextImage, 0, g_TextImageWidth * g_TextImageHeight * 4);
 		m_pRenderer->WriteTextToBitmap(g_pTextImage, g_TextImageWidth, g_TextImageHeight, g_TextImageWidth * 4, &iTextWidth, &iTextHeight, g_pFontObj, wchTxt, dwTxtLen);
@@ -285,9 +287,10 @@ void CGame::Render()
 	rect.right = g_ImageWidth * 2;
 	rect.bottom = g_ImageHeight;
 	m_pRenderer->RenderSpriteObject(g_pSpriteObj0, 0, 0, .4f, .2f, &rect, .1f, gDynamicTextureHandle);
+	m_pRenderer->RenderSpriteObject(g_pSpriteObj0, 200, 200, .2f, .2f , .2f);
 
 
-	m_pRenderer->RenderSpriteObject(g_pSpriteObjCommon, 512 + 5, 256 + 5 + 256 + 5, 1.0f, 1.0f, nullptr, 0.0f, g_pTextTextureHandle);
+	m_pRenderer->RenderSpriteObject(g_pSpriteObjCommon, 1024 + 5,  0, 1.0f, 1.0f, nullptr, 0.0f, g_pTextTextureHandle);
 
 
 
@@ -306,8 +309,6 @@ void CGame::Cleanup()
 		delete g_pImage;
 		g_pImage = nullptr;
 	}
-	
-
 	if (m_pRenderer)
 	{
 
